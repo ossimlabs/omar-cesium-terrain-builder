@@ -1,8 +1,13 @@
 buildscript {
     ext {
-        grailsVersion = project.grailsVersion    
+        grailsVersion = project.grailsVersion
         dockerStatementsOverride = {[
             "FROM homme/cesium-terrain-builder:latest",
+            "WORKDIR /root",
+            "RUN wget https://s3.amazonaws.com/ossimlabs/dependencies/cesium-terrain-builder/jdk-8u151-linux-x64.tar.gz",
+            "RUN tar -xvf jdk-8u151-linux-x64.tar.gz",
+            "ENV JAVA_HOME /usr/bin/jdk1.8.0_151",
+            "ENV PATH \$PATH:/root/jdk1.8.0_151/bin",
             "EXPOSE 8080",
             "COPY ${ project.name }-${ buildVersion }-${ buildVersionTag }.jar /",
             "CMD java -server -Xms256m -Xmx1024m -Djava.awt.headless=true -XX:+CMSClassUnloadingEnabled -XX:+UseGCOverheadLimit -Djava.security.egd=file:/dev/./urandom -jar /${ project.name }-${ buildVersion }-${ buildVersionTag }.jar"

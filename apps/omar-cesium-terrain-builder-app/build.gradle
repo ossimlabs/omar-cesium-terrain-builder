@@ -3,6 +3,7 @@ buildscript {
         grailsVersion = project.grailsVersion
         dockerStatementsOverride = {[
             "FROM homme/cesium-terrain-builder:latest",
+            "RUN apt-get install -y wget",
             "WORKDIR /root",
             "RUN wget https://s3.amazonaws.com/ossimlabs/dependencies/cesium-terrain-builder/jdk-8u151-linux-x64.tar.gz",
             "RUN tar -xvf jdk-8u151-linux-x64.tar.gz",

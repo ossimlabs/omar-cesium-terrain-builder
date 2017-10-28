@@ -3,13 +3,15 @@ buildscript {
         grailsVersion = project.grailsVersion
         dockerStatementsOverride = {[
             "FROM homme/cesium-terrain-builder:latest",
-            "RUN apt-get update",
-            "RUN apt-get install -y wget",
             "WORKDIR /root",
-            "RUN wget https://s3.amazonaws.com/ossimlabs/dependencies/cesium-terrain-builder/jdk-8u151-linux-x64.tar.gz",
-            "RUN tar -xvf jdk-8u151-linux-x64.tar.gz",
-            "ENV JAVA_HOME /usr/bin/jdk1.8.0_151",
-            "ENV PATH /root/jdk1.8.0_151/bin:\$PATH",
+            """RUN apt-get update && \
+                apt-get install -y wget && \
+                wget --quiet https://s3.amazonaws.com/ossimlabs/dependencies/cesium-terrain-builder/jdk-8u151-linux-x64.tar.gz && \
+                tar -xf jdk-8u151-linux-x64.tar.gz""",
+            """ENV JAVA_HOME=/usr/bin/jdk1.8.0_151 \\
+                PATH=/root/jdk1.8.0_151/bin:\$PATH \\
+                SPRING_CLOUD_CONFIG_ENABLED=true \\
+                SPRING_CLOUD_DISCOVERY_ENABLED=true""",
             "EXPOSE 8080",
             "COPY ${ project.name }-${ buildVersion }-${ buildVersionTag }.jar /",
             "CMD java -server -Xms256m -Xmx1024m -Djava.awt.headless=true -XX:+CMSClassUnloadingEnabled -XX:+UseGCOverheadLimit -Djava.security.egd=file:/dev/./urandom -jar /${ project.name }-${ buildVersion }-${ buildVersionTag }.jar"
@@ -46,6 +48,14 @@ repositories {
     maven { url "${ossimMavenProxy}" }
 }
 
+dependencyManagement {
+    imports {
+        mavenBom "org.grails:grails-bom:$grailsVersion"
+        mavenBom "org.springframework.cloud:spring-cloud-starter-parent:Camden.SR7"
+    }
+    applyMavenExclusions false
+}
+
 dependencies {
     compile "org.springframework.boot:spring-boot-starter-logging"
     compile "org.springframework.boot:spring-boot-autoconfigure"
@@ -78,6 +88,9 @@ dependencies {
     testCompile "org.grails:grails-web-testing-support"
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
+
+    compile "org.springframework.cloud:spring-cloud-starter-config:1.3.2.RELEASE"
+    compile "org.springframework.cloud:spring-cloud-starter-eureka:1.3.4.RELEASE"
 }
 
 task wrapper(type: Wrapper) {

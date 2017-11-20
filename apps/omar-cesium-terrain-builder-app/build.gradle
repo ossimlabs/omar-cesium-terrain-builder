@@ -2,8 +2,8 @@ buildscript {
     ext {
         grailsVersion = project.grailsVersion
         dockerStatementsOverride = {[
-            "FROM homme/cesium-terrain-builder:latest"//,
-//            "WORKDIR /root",
+            "FROM homme/cesium-terrain-builder:latest"
+            "WORKDIR /root",
 //            """RUN apt-get update && \
 //                apt-get install -y wget && \
 //                wget --quiet https://s3.amazonaws.com/ossimlabs/dependencies/cesium-terrain-builder/jdk-8u151-linux-x64.tar.gz && \
@@ -12,9 +12,10 @@ buildscript {
 //                PATH=/root/jdk1.8.0_151/bin:\$PATH \\
 //                SPRING_CLOUD_CONFIG_ENABLED=true \\
 //                SPRING_CLOUD_DISCOVERY_ENABLED=true""",
-//            "EXPOSE 8080",
+            "EXPOSE 8080",
 //            "COPY ${ project.name }-${ buildVersion }-${ buildVersionTag }.jar /",
 //            "CMD java -server -Xms256m -Xmx1024m -Djava.awt.headless=true -XX:+CMSClassUnloadingEnabled -XX:+UseGCOverheadLimit -Djava.security.egd=file:/dev/./urandom -jar /${ project.name }-${ buildVersion }-${ buildVersionTag }.jar"
+            "CMD while true; do sleep 10m; done;"
         ]}
     }
     if ( System.env.OMAR_COMMON_PROPERTIES ) {
